@@ -1,7 +1,7 @@
 {
   "name": "kasir-google-sheets",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Website kasir React + Vite + Tailwind dengan Google Sheets dan Google Apps Script REST API.",
   "type": "module",
   "packageManager": "pnpm@11.7.0",

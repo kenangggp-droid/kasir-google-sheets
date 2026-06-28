@@ -1,5 +1,9 @@
 # Release Notes
 
+## v1.0.2
+
+- Menghapus duplikasi versi pnpm di GitHub Actions agar workflow memakai `packageManager` dari `package.json`.
+
 ## v1.0.1
 
 - Mengizinkan build script `esbuild` untuk pnpm 11 agar GitHub Actions dapat menjalankan build Vite.
