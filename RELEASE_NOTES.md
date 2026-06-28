@@ -1,5 +1,9 @@
 # Release Notes
 
+## v1.0.1
+
+- Mengizinkan build script `esbuild` untuk pnpm 11 agar GitHub Actions dapat menjalankan build Vite.
+
 ## v1.0.0
 
 - Login berbasis sheet `Users`.
