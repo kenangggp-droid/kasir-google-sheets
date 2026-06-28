@@ -1,5 +1,9 @@
 # Release Notes
 
+## v1.0.4
+
+- Mengubah deployment GitHub Pages agar berjalan dari branch `main`, sesuai aturan environment Pages.
+
 ## v1.0.3
 
 - Mengaktifkan GitHub Pages otomatis dari workflow deployment.
