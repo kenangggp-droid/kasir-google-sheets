@@ -1,5 +1,9 @@
 # Release Notes
 
+## v1.0.3
+
+- Mengaktifkan GitHub Pages otomatis dari workflow deployment.
+
 ## v1.0.2
 
 - Menghapus duplikasi versi pnpm di GitHub Actions agar workflow memakai `packageManager` dari `package.json`.
