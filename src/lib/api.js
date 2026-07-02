@@ -1,9 +1,6 @@
 const DEMO_KEY = "kasir_demo_store";
 const API_URL = import.meta.env.VITE_APPS_SCRIPT_URL;
 
-console.log("API_URL =", API_URL);
-console.log("ENV =", import.meta.env);
-
 const demoSeed = {
   users: [
     {

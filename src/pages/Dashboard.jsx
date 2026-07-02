@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AlertTriangle, Boxes, ClipboardCheck, Coins, PlusCircle } from "lucide-react";
+import { AlertTriangle, Boxes, ClipboardCheck, Coins, PlusCircle, RefreshCw } from "lucide-react";
 import { Button } from "../components/Button";
 import { StatCard } from "../components/StatCard";
 import { api } from "../lib/api";
@@ -8,9 +8,24 @@ import { number, rupiah } from "../lib/format";
 export function Dashboard({ setPage }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function loadDashboard() {
+    setLoading(true);
+    setError("");
+    try {
+      setData(await api.dashboard());
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    api.dashboard().then(setData).catch((err) => setError(err.message));
+    loadDashboard();
+    const refreshTimer = window.setInterval(loadDashboard, 30000);
+    return () => window.clearInterval(refreshTimer);
   }, []);
 
   if (error) {
@@ -27,9 +42,14 @@ export function Dashboard({ setPage }) {
           <p className="text-sm text-slate-500">Ringkasan hari ini dari sheet Dashboard</p>
           <h2 className="text-2xl font-bold">{data?.date || "Memuat..."}</h2>
         </div>
-        <Button onClick={() => setPage("transaksi")}>
-          <PlusCircle size={18} /> Transaksi Baru
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="secondary" onClick={loadDashboard} disabled={loading}>
+            <RefreshCw size={18} /> {loading ? "Refresh..." : "Refresh"}
+          </Button>
+          <Button onClick={() => setPage("transaksi")}>
+            <PlusCircle size={18} /> Transaksi Baru
+          </Button>
+        </div>
       </div>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

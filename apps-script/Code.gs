@@ -163,6 +163,28 @@ function formatDate(date) {
   return Utilities.formatDate(date, Session.getScriptTimeZone(), "dd/MM/yyyy");
 }
 
+function normalizeDateValue(value) {
+  if (!value) return "";
+  if (Object.prototype.toString.call(value) === "[object Date]" && !isNaN(value.getTime())) {
+    return formatDate(value);
+  }
+
+  const text = String(value).trim();
+  if (!text) return "";
+
+  const isoMatch = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) {
+    return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
+  }
+
+  const slashMatch = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (slashMatch) {
+    return `${slashMatch[1].padStart(2, "0")}/${slashMatch[2].padStart(2, "0")}/${slashMatch[3]}`;
+  }
+
+  return text;
+}
+
 function formatTime(date) {
   return Utilities.formatDate(date, Session.getScriptTimeZone(), "HH:mm:ss");
 }
@@ -246,10 +268,10 @@ function dashboard() {
   );
 
   const sales = history();
-  const todaySales = sales.filter((sale) => String(sale.tanggal) === today);
+  const todaySales = sales.filter((sale) => normalizeDateValue(sale.tanggal) === today);
   const cashRows = rows(SHEETS.cash).records.map((item) => item.object);
   const todayExpense = cashRows
-    .filter((item) => String(item.tanggal || item.Tanggal) === today && String(item.jenis || item.Jenis) === "Pengeluaran")
+    .filter((item) => normalizeDateValue(item.tanggal || item.Tanggal) === today && String(item.jenis || item.Jenis) === "Pengeluaran")
     .reduce((sum, item) => sum + Number(item.nominal || item.Nominal || 0), 0);
   const totalPenjualan = todaySales.reduce((sum, sale) => sum + Number(sale.grandTotal || 0), 0);
 
@@ -361,7 +383,7 @@ function reduceStock(items) {
 function history() {
   return rows(SHEETS.transactions).records.map((record) => ({
     noInvoice: record.object.noInvoice,
-    tanggal: record.object.tanggal,
+    tanggal: normalizeDateValue(record.object.tanggal),
     jam: record.object.jam,
     kasir: record.object.kasir,
     totalItem: Number(record.object.totalItem || 0),
