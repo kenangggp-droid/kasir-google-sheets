@@ -107,9 +107,21 @@ function jsonResponse(ok, data, message) {
 }
 
 function sheet(name) {
-  const target = SpreadsheetApp.getActive().getSheetByName(name);
+  const target = SpreadsheetApp.openById("1wB7s3MjLFshGWkOQsk5yjWxaYtL-Ak8FPmS0fKnVR9k").getSheetByName(name);
   if (!target) throw new Error("Sheet tidak ditemukan: " + name);
   return target;
+}
+
+function testUsers() {
+  const ss = SpreadsheetApp.openById("1wB7s3MjLFshGWkOQsk5yjWxaYtL-Ak8FPmS0fKnVR9k");
+
+  Logger.log(ss.getName());
+
+  const sh = ss.getSheetByName("Users");
+
+  Logger.log(sh.getLastRow());
+
+  Logger.log(sh.getRange(1, 1, 2, 6).getValues());
 }
 
 function rows(name) {

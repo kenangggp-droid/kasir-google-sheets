@@ -52,4 +52,10 @@ Default user dari workbook:
 - Username: `admin`
 - Password: `admin123`
 
+Akun kasir lokal/demo:
+
+- Username: `kasir`
+- Password: `kasir123`
+- Akses: hanya `Transaksi` dan `Checkout`
+
 Lihat [DEPLOYMENT.md](DEPLOYMENT.md) untuk langkah publish ke GitHub Pages atau hosting statis lain.

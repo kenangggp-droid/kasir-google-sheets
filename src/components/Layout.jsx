@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { allowedPagesFor } from "../lib/permissions";
 import { Button } from "./Button";
 
 const nav = [
@@ -22,6 +23,7 @@ const nav = [
 export function Layout({ page, setPage, children }) {
   const { user, logout } = useAuth();
   const { totalQty } = useCart();
+  const visibleNav = nav.filter((item) => allowedPagesFor(user).includes(item.key));
 
   return (
     <div className="min-h-screen">
@@ -36,7 +38,7 @@ export function Layout({ page, setPage, children }) {
           </div>
         </div>
         <nav className="space-y-1">
-          {nav.map((item) => {
+          {visibleNav.map((item) => {
             const Icon = item.icon;
             const active = page === item.key;
             return (
@@ -65,13 +67,13 @@ export function Layout({ page, setPage, children }) {
           <div className="flex min-h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
             <div>
               <h1 className="text-lg font-bold sm:text-xl">
-                {nav.find((item) => item.key === page)?.label}
+                {visibleNav.find((item) => item.key === page)?.label}
               </h1>
               <p className="text-xs text-slate-500">{user?.nama} - {user?.role}</p>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex gap-1 overflow-x-auto lg:hidden">
-                {nav.map((item) => {
+                {visibleNav.map((item) => {
                   const Icon = item.icon;
                   return (
                     <button

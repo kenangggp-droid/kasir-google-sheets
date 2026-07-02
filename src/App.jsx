@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { Layout } from "./components/Layout";
@@ -8,10 +8,18 @@ import { Stock } from "./pages/Stock";
 import { Sales } from "./pages/Sales";
 import { Checkout } from "./pages/Checkout";
 import { History } from "./pages/History";
+import { allowedPagesFor, defaultPageFor } from "./lib/permissions";
 
 function Router() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [page, setPage] = useState("dashboard");
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (!allowedPagesFor(user).includes(page)) {
+      setPage(defaultPageFor(user));
+    }
+  }, [isAuthenticated, page, user]);
 
   if (!isAuthenticated) {
     return <Login />;
@@ -25,9 +33,11 @@ function Router() {
     riwayat: <History />,
   };
 
+  const currentPage = allowedPagesFor(user).includes(page) ? page : defaultPageFor(user);
+
   return (
-    <Layout page={page} setPage={setPage}>
-      {pages[page]}
+    <Layout page={currentPage} setPage={setPage}>
+      {pages[currentPage]}
     </Layout>
   );
 }

@@ -21,13 +21,21 @@ export function Stock() {
   const [products, setProducts] = useState([]);
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState(emptyProduct);
+  const [stockCorrections, setStockCorrections] = useState({});
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
   async function load() {
     setError("");
     try {
-      setProducts(await api.products());
+      const data = await api.products();
+      setProducts(data);
+      setStockCorrections(
+        data.reduce((acc, item) => {
+          acc[item.idBarang] = Number(item.stok || 0);
+          return acc;
+        }, {})
+      );
     } catch (err) {
       setError(err.message);
     }
@@ -64,6 +72,23 @@ export function Stock() {
     try {
       await api.deleteProduct(idBarang);
       setMessage(`${idBarang} dinonaktifkan.`);
+      await load();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function correctStock(item) {
+    setMessage("");
+    setError("");
+    try {
+      const nextStock = Number(stockCorrections[item.idBarang] ?? item.stok ?? 0);
+      if (Number.isNaN(nextStock) || nextStock < 0) {
+        throw new Error("Stok koreksi harus berupa angka 0 atau lebih.");
+      }
+
+      const saved = await api.upsertProduct({ ...item, stok: nextStock });
+      setMessage(`Stok ${saved.namaBarang} dikoreksi menjadi ${saved.stok} ${saved.satuan}.`);
       await load();
     } catch (err) {
       setError(err.message);
@@ -144,14 +169,15 @@ export function Stock() {
           <Button variant="secondary" onClick={load}><RefreshCw size={17} /> Refresh</Button>
         </div>
         <div className="max-h-[72vh] overflow-auto scrollbar-soft">
-          <table className="w-full min-w-[860px] text-left text-sm">
+          <table className="w-full min-w-[980px] text-left text-sm">
             <thead className="sticky top-0 bg-slate-50 text-slate-500">
               <tr>
                 <th className="px-4 py-3">Barang</th>
                 <th className="px-4 py-3">Barcode</th>
                 <th className="px-4 py-3">Kategori</th>
                 <th className="px-4 py-3 text-right">Harga Jual</th>
-                <th className="px-4 py-3 text-right">Stok</th>
+                <th className="px-4 py-3 text-right">Stok Sistem</th>
+                <th className="px-4 py-3">Koreksi Stok</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3 text-right">Aksi</th>
               </tr>
@@ -167,6 +193,33 @@ export function Stock() {
                   <td className="px-4 py-3">{item.kategori}</td>
                   <td className="px-4 py-3 text-right">{rupiah.format(item.hargaJual || 0)}</td>
                   <td className="px-4 py-3 text-right">{item.stok} {item.satuan}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        value={stockCorrections[item.idBarang] ?? item.stok ?? 0}
+                        onChange={(event) =>
+                          setStockCorrections({
+                            ...stockCorrections,
+                            [item.idBarang]: event.target.value,
+                          })
+                        }
+                        className="h-10 w-24 rounded-md border border-line px-3 text-right outline-none focus:border-teal"
+                        aria-label={`Koreksi stok ${item.namaBarang}`}
+                      />
+                      <span className="w-12 text-xs text-slate-500">{item.satuan}</span>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => correctStock(item)}
+                        disabled={Number(stockCorrections[item.idBarang] ?? item.stok) === Number(item.stok)}
+                        title="Simpan koreksi stok"
+                      >
+                        <Save size={16} />
+                      </Button>
+                    </div>
+                  </td>
                   <td className="px-4 py-3">{item.status}</td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-2">

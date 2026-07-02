@@ -43,4 +43,10 @@ Data contoh workbook menyediakan akun:
 - Username: `admin`
 - Password: `admin123`
 
+Tambahkan akun kasir di sheet `Users` bila belum ada:
+
+| ID | Nama | Username | Password | Role | Status |
+| --- | --- | --- | --- | --- | --- |
+| 2 | Kasir | kasir | kasir123 | KASIR | Aktif |
+
 Ganti password langsung di sheet `Users` sebelum dipakai produksi.
