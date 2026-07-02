@@ -107,13 +107,13 @@ function jsonResponse(ok, data, message) {
 }
 
 function sheet(name) {
-  const target = SpreadsheetApp.openById("1wB7s3MjLFshGWkOQsk5yjWxaYtL-Ak8FPmS0fKnVR9k").getSheetByName(name);
+  const target = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
   if (!target) throw new Error("Sheet tidak ditemukan: " + name);
   return target;
 }
 
 function testUsers() {
-  const ss = SpreadsheetApp.openById("1wB7s3MjLFshGWkOQsk5yjWxaYtL-Ak8FPmS0fKnVR9k");
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
 
   Logger.log(ss.getName());
 
