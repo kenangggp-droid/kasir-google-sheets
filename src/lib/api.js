@@ -1,5 +1,8 @@
-const API_URL = import.meta.env.VITE_APPS_SCRIPT_URL;
 const DEMO_KEY = "kasir_demo_store";
+const API_URL = import.meta.env.VITE_APPS_SCRIPT_URL;
+
+console.log("API_URL =", API_URL);
+console.log("ENV =", import.meta.env);
 
 const demoSeed = {
   users: [
@@ -86,10 +89,11 @@ async function request(action, payload = {}) {
       throw new Error(data.message || "Request gagal.");
     }
     return data.data;
-  } catch (error) {
-    console.warn("Apps Script API gagal, memakai Demo Lokal.", error);
-    return demoRequest(action, payload);
-  }
+  } 
+catch (error) {
+  console.error("Apps Script Error:", error);
+  throw error;
+}
 }
 
 function getStore() {
