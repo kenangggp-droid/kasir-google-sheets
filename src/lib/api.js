@@ -73,13 +73,12 @@ async function request(action, payload = {}) {
   }
 
   try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8",
-      },
-      body: JSON.stringify({ action, ...payload }),
+    const params = new URLSearchParams({ action });
+    Object.entries(payload).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+      params.set(key, typeof value === "object" ? JSON.stringify(value) : String(value));
     });
+    const response = await fetch(`${API_URL}?${params.toString()}`, { method: "GET" });
 
     const data = await response.json();
     if (!data.ok) {

@@ -7,6 +7,8 @@ const SHEETS = {
   dashboard: "Dashboard",
 };
 
+const SPREADSHEET_ID = "1VOYoWb9zHStzPH9f8S7qf12y3lDMDPC-0Ff8Rbqn81c";
+
 const HEADERS = {
   products: [
     "ID Barang",
@@ -72,13 +74,27 @@ const FIELD_MAP = {
   Referensi: "referensi",
 };
 
-function doGet() {
+function doGet(e) {
+  if (e && e.parameter && e.parameter.action) {
+    return handleRequest({
+      action: e.parameter.action,
+      username: e.parameter.username,
+      password: e.parameter.password,
+      idBarang: e.parameter.idBarang,
+      product: parseJsonParam(e.parameter.product),
+      sale: parseJsonParam(e.parameter.sale),
+    });
+  }
+
   return jsonResponse(true, { service: "Kasir Google Sheets API", status: "ready" });
 }
 
 function doPost(e) {
+  return handleRequest(JSON.parse(e.postData.contents || "{}"));
+}
+
+function handleRequest(body) {
   try {
-    const body = JSON.parse(e.postData.contents || "{}");
     const action = body.action;
     const routes = {
       login: () => login(body),
@@ -100,6 +116,15 @@ function doPost(e) {
   }
 }
 
+function parseJsonParam(value) {
+  if (!value) return null;
+  try {
+    return JSON.parse(value);
+  } catch (err) {
+    throw new Error("Parameter JSON tidak valid.");
+  }
+}
+
 function jsonResponse(ok, data, message) {
   return ContentService.createTextOutput(
     JSON.stringify({ ok: ok, data: data || null, message: message || "" })
@@ -107,13 +132,13 @@ function jsonResponse(ok, data, message) {
 }
 
 function sheet(name) {
-  const target = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
+  const target = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(name);
   if (!target) throw new Error("Sheet tidak ditemukan: " + name);
   return target;
 }
 
 function testUsers() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
   Logger.log(ss.getName());
 
