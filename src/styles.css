@@ -12,17 +12,57 @@ body {
   min-height: 100vh;
   color: #172126;
   background:
-    linear-gradient(120deg, rgba(223, 243, 235, 0.72), rgba(255, 246, 222, 0.62)),
+    linear-gradient(135deg, rgba(223, 243, 235, 0.84) 0%, rgba(255, 255, 255, 0.72) 42%, rgba(255, 246, 222, 0.76) 100%),
     #f7faf8;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
 
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  background-image:
+    linear-gradient(rgba(23, 33, 38, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 33, 38, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.84), transparent 82%);
+}
+
 button,
 input,
 select {
   font: inherit;
+}
+
+button,
+a,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+select {
+  background-color: rgba(255, 255, 255, 0.82);
+}
+
+input:focus,
+select:focus {
+  box-shadow: 0 0 0 3px rgba(0, 124, 117, 0.12);
+}
+
+table tbody tr {
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+table tbody tr:hover {
+  background-color: rgba(223, 243, 235, 0.34);
 }
 
 .scrollbar-soft::-webkit-scrollbar {
@@ -33,4 +73,31 @@ select {
 .scrollbar-soft::-webkit-scrollbar-thumb {
   background: #b8c7c3;
   border-radius: 999px;
+}
+
+.glass-panel {
+  border: 1px solid rgba(216, 228, 223, 0.92);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(251, 253, 251, 0.9));
+  box-shadow: 0 18px 45px rgba(23, 33, 38, 0.09);
+  backdrop-filter: blur(18px);
+}
+
+.control-surface {
+  border: 1px solid rgba(216, 228, 223, 0.95);
+  background-color: rgba(255, 255, 255, 0.88);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.control-surface:focus-within,
+.control-surface:hover {
+  border-color: rgba(0, 124, 117, 0.45);
+  box-shadow: 0 12px 28px rgba(0, 124, 117, 0.1);
+}
+
+.page-enter {
+  animation: fadeUp 520ms ease-out both;
 }

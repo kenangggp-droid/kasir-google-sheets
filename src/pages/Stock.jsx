@@ -97,7 +97,7 @@ export function Stock() {
 
   return (
     <div className="grid gap-6 xl:grid-cols-[390px_1fr]">
-      <form onSubmit={save} className="rounded-md border border-line bg-white p-4 shadow-panel">
+      <form onSubmit={save} className="glass-panel rounded-md p-4">
         <h2 className="mb-4 text-lg font-bold">Form Barang</h2>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
           {[
@@ -112,7 +112,7 @@ export function Stock() {
               <input
                 value={editing[key]}
                 onChange={(event) => setEditing({ ...editing, [key]: event.target.value })}
-                className="min-h-10 w-full rounded-md border border-line px-3 outline-none focus:border-teal"
+                className="control-surface min-h-10 w-full rounded-md px-3 outline-none focus:border-teal"
                 required={["idBarang", "namaBarang"].includes(key)}
               />
             </label>
@@ -129,7 +129,7 @@ export function Stock() {
                 type="number"
                 value={editing[key]}
                 onChange={(event) => setEditing({ ...editing, [key]: Number(event.target.value) })}
-                className="min-h-10 w-full rounded-md border border-line px-3 outline-none focus:border-teal"
+                className="control-surface min-h-10 w-full rounded-md px-3 outline-none focus:border-teal"
               />
             </label>
           ))}
@@ -138,7 +138,7 @@ export function Stock() {
             <select
               value={editing.status}
               onChange={(event) => setEditing({ ...editing, status: event.target.value })}
-              className="min-h-10 w-full rounded-md border border-line px-3 outline-none focus:border-teal"
+              className="control-surface min-h-10 w-full rounded-md px-3 outline-none focus:border-teal"
             >
               <option>Aktif</option>
               <option>Nonaktif</option>
@@ -155,9 +155,9 @@ export function Stock() {
         {error ? <p className="mt-3 rounded-md bg-red-50 p-2 text-sm text-red-700">{error}</p> : null}
       </form>
 
-      <section className="rounded-md border border-line bg-white shadow-panel">
+      <section className="glass-panel rounded-md">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line p-4">
-          <div className="flex min-h-10 flex-1 items-center gap-2 rounded-md border border-line px-3">
+          <div className="control-surface flex min-h-10 flex-1 items-center gap-2 rounded-md px-3">
             <Search size={18} className="text-slate-400" />
             <input
               value={query}
@@ -205,7 +205,7 @@ export function Stock() {
                             [item.idBarang]: event.target.value,
                           })
                         }
-                        className="h-10 w-24 rounded-md border border-line px-3 text-right outline-none focus:border-teal"
+                        className="control-surface h-10 w-24 rounded-md px-3 text-right outline-none focus:border-teal"
                         aria-label={`Koreksi stok ${item.namaBarang}`}
                       />
                       <span className="w-12 text-xs text-slate-500">{item.satuan}</span>

@@ -20,7 +20,7 @@ export function History() {
   }, [history, query]);
 
   return (
-    <section className="rounded-md border border-line bg-white shadow-panel">
+    <section className="glass-panel rounded-md">
       <div className="flex items-center gap-2 border-b border-line p-4">
         <Search size={18} className="text-slate-400" />
         <input

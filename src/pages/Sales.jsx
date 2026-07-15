@@ -26,7 +26,7 @@ export function Sales({ setPage }) {
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
-      <section className="rounded-md border border-line bg-white shadow-panel">
+      <section className="glass-panel rounded-md">
         <div className="flex items-center gap-2 border-b border-line p-4">
           <Search size={18} className="text-slate-400" />
           <input
@@ -44,7 +44,7 @@ export function Sales({ setPage }) {
               key={item.idBarang}
               onClick={() => addItem(item)}
               disabled={Number(item.stok || 0) <= 0}
-              className="rounded-md border border-line bg-white p-4 text-left transition hover:border-teal hover:shadow-panel disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-md border border-line bg-white/82 p-4 text-left transition duration-200 hover:-translate-y-1 hover:border-teal hover:shadow-lift disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
             >
               <div className="mb-3 flex items-start justify-between gap-3">
                 <div>
@@ -62,14 +62,14 @@ export function Sales({ setPage }) {
         </div>
       </section>
 
-      <aside className="rounded-md border border-line bg-white p-4 shadow-panel">
+      <aside className="glass-panel rounded-md p-4">
         <div className="mb-4 flex items-center gap-2">
           <ShoppingCart size={20} className="text-teal" />
           <h2 className="text-lg font-bold">Keranjang</h2>
         </div>
         <div className="space-y-3">
           {items.slice(0, 5).map((item) => (
-            <div key={item.idBarang} className="rounded-md bg-slate-50 p-3">
+            <div key={item.idBarang} className="rounded-md bg-white/70 p-3 ring-1 ring-line/70">
               <div className="flex justify-between gap-3">
                 <p className="font-semibold">{item.namaBarang}</p>
                 <p>{item.qty}x</p>
@@ -77,7 +77,7 @@ export function Sales({ setPage }) {
               <p className="mt-1 text-sm text-slate-500">{rupiah.format(item.harga * item.qty)}</p>
             </div>
           ))}
-          {!items.length ? <p className="rounded-md bg-slate-50 p-4 text-sm text-slate-500">Keranjang kosong.</p> : null}
+          {!items.length ? <p className="rounded-md bg-white/70 p-4 text-sm text-slate-500 ring-1 ring-line/70">Keranjang kosong.</p> : null}
         </div>
         <div className="my-4 border-t border-line pt-4">
           <div className="flex justify-between text-sm text-slate-500">

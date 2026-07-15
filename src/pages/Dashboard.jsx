@@ -59,7 +59,7 @@ export function Dashboard({ setPage }) {
         <StatCard label="Barang Menipis" value={number.format(lowStock.length)} tone="coral" icon={AlertTriangle} />
       </section>
 
-      <section className="rounded-md border border-line bg-white shadow-panel">
+      <section className="glass-panel rounded-md">
         <div className="flex items-center gap-2 border-b border-line px-4 py-3">
           <Boxes size={19} className="text-teal" />
           <h3 className="font-bold">Stok di Bawah Minimal</h3>

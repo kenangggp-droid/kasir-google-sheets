@@ -44,7 +44,7 @@ export function Checkout({ setPage }) {
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1fr_390px]">
-      <section className="rounded-md border border-line bg-white shadow-panel">
+      <section className="glass-panel rounded-md">
         <div className="flex items-center gap-2 border-b border-line px-4 py-3">
           <ReceiptText size={20} className="text-teal" />
           <h2 className="font-bold">Item Checkout</h2>
@@ -74,7 +74,7 @@ export function Checkout({ setPage }) {
                       <input
                         value={item.qty}
                         onChange={(event) => updateQty(item.idBarang, event.target.value)}
-                        className="h-10 w-12 rounded-md border border-line text-center outline-none"
+                        className="control-surface h-10 w-12 rounded-md text-center outline-none"
                       />
                       <Button variant="secondary" onClick={() => updateQty(item.idBarang, item.qty + 1)}><Plus size={15} /></Button>
                     </div>
@@ -99,7 +99,7 @@ export function Checkout({ setPage }) {
         </div>
       </section>
 
-      <aside className="rounded-md border border-line bg-white p-4 shadow-panel">
+      <aside className="glass-panel rounded-md p-4">
         <h2 className="mb-4 text-lg font-bold">Pembayaran</h2>
         <div className="space-y-3">
           {[
@@ -113,7 +113,7 @@ export function Checkout({ setPage }) {
                 type="number"
                 value={value}
                 onChange={(event) => setter(Number(event.target.value))}
-                className="min-h-10 w-full rounded-md border border-line px-3 outline-none focus:border-teal"
+                className="control-surface min-h-10 w-full rounded-md px-3 outline-none focus:border-teal"
               />
             </label>
           ))}
@@ -122,7 +122,7 @@ export function Checkout({ setPage }) {
             <select
               value={method}
               onChange={(event) => setMethod(event.target.value)}
-              className="min-h-10 w-full rounded-md border border-line px-3 outline-none focus:border-teal"
+              className="control-surface min-h-10 w-full rounded-md px-3 outline-none focus:border-teal"
             >
               <option>Tunai</option>
               <option>QRIS</option>

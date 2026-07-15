@@ -1,16 +1,16 @@
 export function StatCard({ label, value, tone = "teal", icon: Icon }) {
   const tones = {
-    teal: "bg-teal text-white",
-    amber: "bg-amber text-ink",
-    coral: "bg-coral text-white",
-    mint: "bg-mint text-teal",
+    teal: "bg-teal text-white shadow-[0_12px_26px_rgba(0,124,117,0.2)]",
+    amber: "bg-amber text-ink shadow-[0_12px_26px_rgba(246,180,69,0.22)]",
+    coral: "bg-coral text-white shadow-[0_12px_26px_rgba(240,111,79,0.22)]",
+    mint: "bg-mint text-teal shadow-[0_12px_26px_rgba(0,124,117,0.12)]",
   };
 
   return (
-    <div className="rounded-md border border-line bg-white p-4 shadow-panel">
+    <div className="glass-panel rounded-md p-4 transition duration-200 hover:-translate-y-1 hover:shadow-lift">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500">{label}</p>
+          <p className="text-sm font-medium text-slate-500">{label}</p>
           <p className="mt-2 text-2xl font-bold tracking-normal">{value}</p>
         </div>
         {Icon ? (
