@@ -1,5 +1,7 @@
 const DEMO_KEY = "kasir_demo_store";
-const API_URL = import.meta.env.VITE_APPS_SCRIPT_URL;
+const PRODUCTION_API_URL =
+  "https://script.google.com/macros/s/AKfycbwWLpykfj3W6kYFC-2q4bEdVfoS2pXh8YLTsDPjrs_cSLTYrDr5r2wLzm_oM_9BhRHAwg/exec";
+const API_URL = import.meta.env.VITE_APPS_SCRIPT_URL || PRODUCTION_API_URL;
 
 const demoSeed = {
   users: [
