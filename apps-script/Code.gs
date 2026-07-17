@@ -80,6 +80,7 @@ function doGet(e) {
       action: e.parameter.action,
       username: e.parameter.username,
       password: e.parameter.password,
+      noInvoice: e.parameter.noInvoice,
       idBarang: e.parameter.idBarang,
       product: parseJsonParam(e.parameter.product),
       sale: parseJsonParam(e.parameter.sale),
@@ -104,6 +105,7 @@ function handleRequest(body) {
       deleteProduct: () => deleteProduct(body.idBarang),
       checkout: () => checkout(body.sale),
       history: () => history(),
+      saleDetails: () => saleDetails(body.noInvoice),
     };
 
     if (!routes[action]) {
@@ -212,6 +214,28 @@ function normalizeDateValue(value) {
 
 function formatTime(date) {
   return Utilities.formatDate(date, Session.getScriptTimeZone(), "HH:mm:ss");
+}
+
+function normalizeTimeValue(value) {
+  if (!value) return "";
+  if (Object.prototype.toString.call(value) === "[object Date]" && !isNaN(value.getTime())) {
+    return formatTime(value);
+  }
+
+  const text = String(value).trim();
+  if (!text) return "";
+
+  const timeMatch = text.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (timeMatch) {
+    return `${timeMatch[1].padStart(2, "0")}:${timeMatch[2]}:${(timeMatch[3] || "00").padStart(2, "0")}`;
+  }
+
+  const isoMatch = text.match(/T(\d{2}):(\d{2}):(\d{2})/);
+  if (isoMatch) {
+    return `${isoMatch[1]}:${isoMatch[2]}:${isoMatch[3]}`;
+  }
+
+  return text;
 }
 
 function login(body) {
@@ -409,7 +433,7 @@ function history() {
   return rows(SHEETS.transactions).records.map((record) => ({
     noInvoice: record.object.noInvoice,
     tanggal: normalizeDateValue(record.object.tanggal),
-    jam: record.object.jam,
+    jam: normalizeTimeValue(record.object.jam),
     kasir: record.object.kasir,
     totalItem: Number(record.object.totalItem || 0),
     subtotal: Number(record.object.subtotal || 0),
@@ -420,6 +444,22 @@ function history() {
     kembalian: Number(record.object.kembalian || 0),
     metodeBayar: record.object.metodeBayar,
   })).reverse();
+}
+
+function saleDetails(noInvoice) {
+  if (!noInvoice) throw new Error("Nomor invoice wajib diisi.");
+
+  return rows(SHEETS.details).records
+    .map((record) => record.object)
+    .filter((item) => String(item.noInvoice || "") === String(noInvoice))
+    .map((item) => ({
+      noInvoice: item.noInvoice,
+      idBarang: item.idBarang,
+      namaBarang: item.namaBarang,
+      qty: Number(item.qty || 0),
+      harga: Number(item.harga || 0),
+      total: Number(item.total || 0),
+    }));
 }
 
 function appendWithHeaders(sheetName, headers, object) {

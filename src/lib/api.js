@@ -145,6 +145,7 @@ function demoRequest(action, payload) {
     deleteProduct: () => demoDeleteProduct(store, payload.idBarang),
     checkout: () => demoCheckout(store, payload.sale),
     history: () => [...store.transactions].reverse(),
+    saleDetails: () => demoSaleDetails(store, payload.noInvoice),
   };
 
   if (!routes[action]) {
@@ -307,6 +308,23 @@ function demoCheckout(store, sale) {
   return { invoice, grandTotal, change: kembalian };
 }
 
+function demoSaleDetails(store, noInvoice) {
+  if (!noInvoice) {
+    throw new Error("Nomor invoice wajib diisi.");
+  }
+
+  return store.details
+    .filter((item) => item.noInvoice === noInvoice)
+    .map((item) => ({
+      noInvoice: item.noInvoice,
+      idBarang: item.idBarang,
+      namaBarang: item.namaBarang,
+      qty: Number(item.qty || 0),
+      harga: Number(item.harga || 0),
+      total: Number(item.total || 0),
+    }));
+}
+
 function formatDate(date) {
   return new Intl.DateTimeFormat("id-ID", {
     day: "2-digit",
@@ -345,4 +363,5 @@ export const api = {
   deleteProduct: (idBarang) => request("deleteProduct", { idBarang }),
   checkout: (sale) => request("checkout", { sale }),
   history: () => request("history"),
+  saleDetails: (noInvoice) => request("saleDetails", { noInvoice }),
 };
