@@ -117,14 +117,14 @@ export function History() {
 function DetailModal({ detailError, detailItems, detailLoading, onClose, sale }) {
   return (
     <div
-      className="fixed inset-x-0 bottom-0 top-16 z-[100] overflow-y-auto bg-ink/45 px-4 backdrop-blur-sm lg:left-64"
+      className="fixed inset-x-0 bottom-0 top-16 z-[100] overflow-y-auto bg-ink/45 px-4 py-4 backdrop-blur-sm lg:left-64"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="flex min-h-full items-start justify-center py-4 sm:py-6">
-        <section className="glass-panel relative flex max-h-[calc(100dvh-7rem)] w-full max-w-4xl animate-fade-up flex-col overflow-hidden rounded-md">
-          <div className="flex shrink-0 items-start justify-between gap-4 border-b border-line bg-white/88 p-4 pr-28 backdrop-blur sm:p-5 sm:pr-32">
+      <div className="mx-auto flex min-h-full w-full max-w-4xl items-start">
+        <section className="glass-panel relative flex w-full animate-fade-up flex-col overflow-hidden rounded-md">
+          <div className="sticky top-0 z-20 flex shrink-0 items-start justify-between gap-4 border-b border-line bg-white/95 p-4 backdrop-blur sm:p-5">
             <div className="flex gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-teal text-white shadow-lift">
                 <ReceiptText size={22} />
@@ -137,83 +137,86 @@ function DetailModal({ detailError, detailItems, detailLoading, onClose, sale })
                 </p>
               </div>
             </div>
+            <div className="flex shrink-0 gap-2">
+              <button
+                type="button"
+                onClick={() => printReceipt(sale, detailItems)}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-slate-700 shadow-panel ring-1 ring-line transition hover:-translate-y-0.5 hover:bg-mint hover:text-teal disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
+                title="Cetak struk"
+                aria-label="Cetak struk"
+                disabled={detailLoading || Boolean(detailError)}
+              >
+                <Printer size={19} />
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-slate-700 shadow-panel ring-1 ring-line transition hover:-translate-y-0.5 hover:bg-red-50 hover:text-red-700"
+                title="Tutup"
+                aria-label="Tutup detail pembelian"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
-          <div className="absolute right-4 top-4 z-10 flex gap-2">
-            <button
-              type="button"
-              onClick={() => printReceipt(sale, detailItems)}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-slate-700 shadow-panel ring-1 ring-line transition hover:-translate-y-0.5 hover:bg-mint hover:text-teal disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
-              title="Cetak struk"
-              aria-label="Cetak struk"
-              disabled={detailLoading || Boolean(detailError)}
-            >
-              <Printer size={19} />
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-slate-700 shadow-panel ring-1 ring-line transition hover:-translate-y-0.5 hover:bg-red-50 hover:text-red-700"
-              title="Tutup"
-              aria-label="Tutup detail pembelian"
-            >
-              <X size={20} />
-            </button>
-          </div>
+          <div className="max-h-[calc(100dvh-12rem)] overflow-auto scrollbar-soft">
+            <div className="min-w-0">
+              {detailLoading ? (
+                <p className="p-5 text-sm text-slate-500">Memuat detail pembelian...</p>
+              ) : null}
 
-          <div className="min-h-0 flex-1 overflow-auto scrollbar-soft">
-            {detailLoading ? (
-              <p className="p-5 text-sm text-slate-500">Memuat detail pembelian...</p>
-            ) : null}
+              {detailError ? (
+                <p className="m-5 rounded-md bg-red-50 p-3 text-sm text-red-700">{detailError}</p>
+              ) : null}
 
-            {detailError ? (
-              <p className="m-5 rounded-md bg-red-50 p-3 text-sm text-red-700">{detailError}</p>
-            ) : null}
+              {!detailLoading && !detailError ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[640px] text-left text-sm">
+                    <thead className="sticky top-0 z-[1] bg-slate-50 text-slate-500 shadow-[0_1px_0_rgba(216,228,223,1)]">
+                      <tr>
+                        <th className="px-4 py-3">Barang</th>
+                        <th className="px-4 py-3">ID</th>
+                        <th className="px-4 py-3 text-right">Qty</th>
+                        <th className="px-4 py-3 text-right">Harga</th>
+                        <th className="px-4 py-3 text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {detailItems.map((item, index) => (
+                        <tr key={`${item.idBarang}-${index}`} className="border-t border-line">
+                          <td className="px-4 py-3 font-semibold">{item.namaBarang}</td>
+                          <td className="px-4 py-3 text-slate-500">{item.idBarang}</td>
+                          <td className="px-4 py-3 text-right">{item.qty}</td>
+                          <td className="px-4 py-3 text-right">{rupiah.format(item.harga || 0)}</td>
+                          <td className="px-4 py-3 text-right font-semibold">{rupiah.format(item.total || 0)}</td>
+                        </tr>
+                      ))}
+                      {!detailItems.length ? (
+                        <tr>
+                          <td colSpan="5" className="px-4 py-8 text-center text-slate-500">
+                            Detail item tidak ditemukan untuk invoice ini.
+                          </td>
+                        </tr>
+                      ) : null}
+                    </tbody>
+                  </table>
+                </div>
+              ) : null}
 
-            {!detailLoading && !detailError ? (
-              <table className="w-full min-w-[640px] text-left text-sm">
-                <thead className="sticky top-0 z-[1] bg-slate-50 text-slate-500 shadow-[0_1px_0_rgba(216,228,223,1)]">
-                  <tr>
-                    <th className="px-4 py-3">Barang</th>
-                    <th className="px-4 py-3">ID</th>
-                    <th className="px-4 py-3 text-right">Qty</th>
-                    <th className="px-4 py-3 text-right">Harga</th>
-                    <th className="px-4 py-3 text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {detailItems.map((item, index) => (
-                    <tr key={`${item.idBarang}-${index}`} className="border-t border-line">
-                      <td className="px-4 py-3 font-semibold">{item.namaBarang}</td>
-                      <td className="px-4 py-3 text-slate-500">{item.idBarang}</td>
-                      <td className="px-4 py-3 text-right">{item.qty}</td>
-                      <td className="px-4 py-3 text-right">{rupiah.format(item.harga || 0)}</td>
-                      <td className="px-4 py-3 text-right font-semibold">{rupiah.format(item.total || 0)}</td>
-                    </tr>
-                  ))}
-                  {!detailItems.length ? (
-                    <tr>
-                      <td colSpan="5" className="px-4 py-8 text-center text-slate-500">
-                        Detail item tidak ditemukan untuk invoice ini.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            ) : null}
-          </div>
-
-          <div className="grid shrink-0 gap-3 border-t border-line bg-white/72 p-4 sm:grid-cols-2 sm:p-5">
-            <SummaryRow label="Subtotal" value={rupiah.format(sale.subtotal || 0)} />
-            <SummaryRow label="Diskon" value={rupiah.format(sale.diskon || 0)} />
-            <SummaryRow label="Pajak" value={rupiah.format(sale.pajak || 0)} />
-            <SummaryRow label="Metode" value={sale.metodeBayar || "-"} />
-            <SummaryRow label="Bayar" value={rupiah.format(sale.bayar || 0)} />
-            <SummaryRow label="Kembalian" value={rupiah.format(sale.kembalian || 0)} />
-            <div className="rounded-md bg-teal px-4 py-3 text-white sm:col-span-2">
-              <div className="flex justify-between gap-4 text-lg font-bold">
-                <span>Grand Total</span>
-                <span>{rupiah.format(sale.grandTotal || 0)}</span>
+              <div className="grid gap-3 border-t border-line bg-white/72 p-4 sm:grid-cols-2 sm:p-5">
+                <SummaryRow label="Subtotal" value={rupiah.format(sale.subtotal || 0)} />
+                <SummaryRow label="Diskon" value={rupiah.format(sale.diskon || 0)} />
+                <SummaryRow label="Pajak" value={rupiah.format(sale.pajak || 0)} />
+                <SummaryRow label="Metode" value={sale.metodeBayar || "-"} />
+                <SummaryRow label="Bayar" value={rupiah.format(sale.bayar || 0)} />
+                <SummaryRow label="Kembalian" value={rupiah.format(sale.kembalian || 0)} />
+                <div className="rounded-md bg-teal px-4 py-3 text-white sm:col-span-2">
+                  <div className="flex justify-between gap-4 text-lg font-bold">
+                    <span>Grand Total</span>
+                    <span>{rupiah.format(sale.grandTotal || 0)}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
