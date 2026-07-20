@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Eye, ReceiptText, Search, X } from "lucide-react";
+import { Eye, Printer, ReceiptText, Search, X } from "lucide-react";
 import { Button } from "../components/Button";
 import { api } from "../lib/api";
 import { rupiah } from "../lib/format";
@@ -117,14 +117,14 @@ export function History() {
 function DetailModal({ detailError, detailItems, detailLoading, onClose, sale }) {
   return (
     <div
-      className="fixed inset-0 z-[100] overflow-y-auto bg-ink/45 px-4 py-8 backdrop-blur-sm sm:py-10"
+      className="fixed inset-x-0 bottom-0 top-16 z-[100] overflow-y-auto bg-ink/45 px-4 backdrop-blur-sm lg:left-64"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="flex min-h-full items-center justify-center">
-        <section className="glass-panel relative flex max-h-[calc(100vh-4rem)] w-full max-w-4xl animate-fade-up flex-col overflow-hidden rounded-md">
-          <div className="flex shrink-0 items-start justify-between gap-4 border-b border-line bg-white/88 p-4 pr-16 backdrop-blur sm:p-5 sm:pr-20">
+      <div className="flex min-h-full items-start justify-center py-4 sm:py-6">
+        <section className="glass-panel relative flex max-h-[calc(100dvh-7rem)] w-full max-w-4xl animate-fade-up flex-col overflow-hidden rounded-md">
+          <div className="flex shrink-0 items-start justify-between gap-4 border-b border-line bg-white/88 p-4 pr-28 backdrop-blur sm:p-5 sm:pr-32">
             <div className="flex gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-teal text-white shadow-lift">
                 <ReceiptText size={22} />
@@ -139,15 +139,27 @@ function DetailModal({ detailError, detailItems, detailLoading, onClose, sale })
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute right-4 top-4 z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-slate-700 shadow-panel ring-1 ring-line transition hover:-translate-y-0.5 hover:bg-red-50 hover:text-red-700"
-            title="Tutup"
-            aria-label="Tutup detail pembelian"
-          >
-            <X size={20} />
-          </button>
+          <div className="absolute right-4 top-4 z-10 flex gap-2">
+            <button
+              type="button"
+              onClick={() => printReceipt(sale, detailItems)}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-slate-700 shadow-panel ring-1 ring-line transition hover:-translate-y-0.5 hover:bg-mint hover:text-teal disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
+              title="Cetak struk"
+              aria-label="Cetak struk"
+              disabled={detailLoading || Boolean(detailError)}
+            >
+              <Printer size={19} />
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-slate-700 shadow-panel ring-1 ring-line transition hover:-translate-y-0.5 hover:bg-red-50 hover:text-red-700"
+              title="Tutup"
+              aria-label="Tutup detail pembelian"
+            >
+              <X size={20} />
+            </button>
+          </div>
 
           <div className="min-h-0 flex-1 overflow-auto scrollbar-soft">
             {detailLoading ? (
@@ -218,4 +230,118 @@ function SummaryRow({ label, value }) {
       <span className="font-semibold">{value}</span>
     </div>
   );
+}
+
+function printReceipt(sale, detailItems) {
+  const receiptWindow = window.open("", "_blank", "width=420,height=720");
+  if (!receiptWindow) return;
+
+  const rows = detailItems
+    .map(
+      (item) => `
+        <tr>
+          <td>
+            <strong>${escapeHtml(item.namaBarang || "-")}</strong><br />
+            <span>${escapeHtml(item.idBarang || "")}</span>
+          </td>
+          <td class="right">${Number(item.qty || 0)}</td>
+          <td class="right">${rupiah.format(item.harga || 0)}</td>
+          <td class="right">${rupiah.format(item.total || 0)}</td>
+        </tr>`
+    )
+    .join("");
+
+  receiptWindow.document.write(`
+    <!doctype html>
+    <html>
+      <head>
+        <title>Struk ${escapeHtml(sale.noInvoice || "")}</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            padding: 18px;
+            color: #172126;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 12px;
+          }
+          h1 { margin: 0 0 4px; font-size: 18px; text-align: center; }
+          .center { text-align: center; }
+          .muted { color: #64748b; }
+          .line { border-top: 1px dashed #94a3b8; margin: 12px 0; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { padding: 6px 0; vertical-align: top; }
+          th { border-bottom: 1px solid #d8e4df; color: #64748b; font-weight: 700; }
+          .right { text-align: right; }
+          .total {
+            margin-top: 10px;
+            padding: 10px 0;
+            border-top: 1px dashed #94a3b8;
+            border-bottom: 1px dashed #94a3b8;
+            font-size: 16px;
+            font-weight: 800;
+          }
+          .summary div { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
+          @media print {
+            body { padding: 0; }
+            @page { margin: 10mm; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Kasir Toko</h1>
+        <p class="center muted">Google Sheets POS</p>
+        <div class="line"></div>
+        <div>
+          <div><strong>Invoice:</strong> ${escapeHtml(sale.noInvoice || "-")}</div>
+          <div><strong>Tanggal:</strong> ${escapeHtml(sale.tanggal || "-")} ${escapeHtml(sale.jam || "")}</div>
+          <div><strong>Kasir:</strong> ${escapeHtml(sale.kasir || "-")}</div>
+          <div><strong>Metode:</strong> ${escapeHtml(sale.metodeBayar || "-")}</div>
+        </div>
+        <div class="line"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Barang</th>
+              <th class="right">Qty</th>
+              <th class="right">Harga</th>
+              <th class="right">Total</th>
+            </tr>
+          </thead>
+          <tbody>${rows || `<tr><td colspan="4" class="center muted">Tidak ada item</td></tr>`}</tbody>
+        </table>
+        <div class="line"></div>
+        <div class="summary">
+          <div><span>Subtotal</span><strong>${rupiah.format(sale.subtotal || 0)}</strong></div>
+          <div><span>Diskon</span><strong>${rupiah.format(sale.diskon || 0)}</strong></div>
+          <div><span>Pajak</span><strong>${rupiah.format(sale.pajak || 0)}</strong></div>
+          <div><span>Bayar</span><strong>${rupiah.format(sale.bayar || 0)}</strong></div>
+          <div><span>Kembalian</span><strong>${rupiah.format(sale.kembalian || 0)}</strong></div>
+        </div>
+        <div class="total">
+          <div style="display:flex; justify-content:space-between; gap:12px;">
+            <span>Grand Total</span>
+            <span>${rupiah.format(sale.grandTotal || 0)}</span>
+          </div>
+        </div>
+        <p class="center muted">Terima kasih</p>
+        <script>
+          window.onload = () => {
+            window.print();
+            window.onafterprint = () => window.close();
+          };
+        </script>
+      </body>
+    </html>
+  `);
+  receiptWindow.document.close();
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
