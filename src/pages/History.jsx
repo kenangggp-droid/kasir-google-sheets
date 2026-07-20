@@ -117,13 +117,13 @@ export function History() {
 function DetailModal({ detailError, detailItems, detailLoading, onClose, sale }) {
   return (
     <div
-      className="fixed inset-x-0 bottom-0 top-16 z-[100] overflow-y-auto bg-ink/45 px-4 py-4 backdrop-blur-sm lg:left-64"
+      className="fixed inset-x-0 bottom-0 top-16 z-[100] bg-ink/45 px-3 py-3 backdrop-blur-sm sm:px-5 sm:py-5 lg:left-64"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="mx-auto flex min-h-full w-full max-w-4xl items-start">
-        <section className="glass-panel relative flex w-full animate-fade-up flex-col overflow-hidden rounded-md">
+      <div className="mx-auto flex h-full w-full max-w-7xl items-stretch">
+        <section className="glass-panel relative flex h-full w-full animate-fade-up flex-col overflow-hidden rounded-md">
           <div className="sticky top-0 z-20 flex shrink-0 items-start justify-between gap-4 border-b border-line bg-white/95 p-4 backdrop-blur sm:p-5">
             <div className="flex gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-teal text-white shadow-lift">
@@ -160,8 +160,8 @@ function DetailModal({ detailError, detailItems, detailLoading, onClose, sale })
             </div>
           </div>
 
-          <div className="max-h-[calc(100dvh-12rem)] overflow-auto scrollbar-soft">
-            <div className="min-w-0">
+          <div className="min-h-0 flex-1 overflow-auto scrollbar-soft">
+            <div className="flex min-h-full min-w-0 flex-col">
               {detailLoading ? (
                 <p className="p-5 text-sm text-slate-500">Memuat detail pembelian...</p>
               ) : null}
@@ -204,7 +204,7 @@ function DetailModal({ detailError, detailItems, detailLoading, onClose, sale })
                 </div>
               ) : null}
 
-              <div className="grid gap-3 border-t border-line bg-white/72 p-4 sm:grid-cols-2 sm:p-5">
+              <div className="mt-auto grid gap-3 border-t border-line bg-white/72 p-4 sm:grid-cols-2 sm:p-5">
                 <SummaryRow label="Subtotal" value={rupiah.format(sale.subtotal || 0)} />
                 <SummaryRow label="Diskon" value={rupiah.format(sale.diskon || 0)} />
                 <SummaryRow label="Pajak" value={rupiah.format(sale.pajak || 0)} />
