@@ -9,14 +9,17 @@ import { rupiah } from "../lib/format";
 export function Checkout({ setPage }) {
   const { user } = useAuth();
   const { items, updateQty, removeItem, clearCart, subtotal, totalQty } = useCart();
-  const [discount, setDiscount] = useState(0);
-  const [tax, setTax] = useState(0);
-  const [paid, setPaid] = useState(0);
+  const [discount, setDiscount] = useState("");
+  const [tax, setTax] = useState("");
+  const [paid, setPaid] = useState("");
   const [method, setMethod] = useState("Tunai");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const grandTotal = useMemo(() => Math.max(0, subtotal - Number(discount || 0) + Number(tax || 0)), [subtotal, discount, tax]);
-  const change = Number(paid || 0) - grandTotal;
+  const discountValue = toNumber(discount);
+  const taxValue = toNumber(tax);
+  const paidValue = toNumber(paid);
+  const grandTotal = useMemo(() => Math.max(0, subtotal - discountValue + taxValue), [subtotal, discountValue, taxValue]);
+  const change = paidValue - grandTotal;
 
   async function pay() {
     setMessage("");
@@ -27,16 +30,16 @@ export function Checkout({ setPage }) {
       const result = await api.checkout({
         cashier: user?.nama || user?.username,
         items,
-        discount: Number(discount || 0),
-        tax: Number(tax || 0),
-        paid: Number(paid || 0),
+        discount: discountValue,
+        tax: taxValue,
+        paid: paidValue,
         method,
       });
       setMessage(`Invoice ${result.invoice} tersimpan.`);
       clearCart();
-      setDiscount(0);
-      setTax(0);
-      setPaid(0);
+      setDiscount("");
+      setTax("");
+      setPaid("");
     } catch (err) {
       setError(err.message);
     }
@@ -112,7 +115,10 @@ export function Checkout({ setPage }) {
               <input
                 type="number"
                 value={value}
-                onChange={(event) => setter(Number(event.target.value))}
+                min="0"
+                inputMode="numeric"
+                onChange={(event) => setter(cleanNominal(event.target.value))}
+                onFocus={(event) => event.target.select()}
                 className="control-surface min-h-10 w-full rounded-md px-3 outline-none focus:border-teal"
               />
             </label>
@@ -134,8 +140,8 @@ export function Checkout({ setPage }) {
         <div className="my-4 space-y-2 border-y border-line py-4">
           <Row label="Total Item" value={totalQty} />
           <Row label="Subtotal" value={rupiah.format(subtotal)} />
-          <Row label="Diskon" value={rupiah.format(discount || 0)} />
-          <Row label="Pajak" value={rupiah.format(tax || 0)} />
+          <Row label="Diskon" value={rupiah.format(discountValue)} />
+          <Row label="Pajak" value={rupiah.format(taxValue)} />
           <Row label="Grand Total" value={rupiah.format(grandTotal)} strong />
           <Row label="Kembalian" value={rupiah.format(Math.max(0, change))} strong />
         </div>
@@ -148,6 +154,16 @@ export function Checkout({ setPage }) {
       </aside>
     </div>
   );
+}
+
+function cleanNominal(value) {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return "";
+  return String(Number(digits));
+}
+
+function toNumber(value) {
+  return Number(value || 0);
 }
 
 function Row({ label, value, strong = false }) {
