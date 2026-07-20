@@ -113,9 +113,8 @@ export function Checkout({ setPage }) {
             <label key={key} className="block">
               <span className="mb-1 block text-sm font-semibold">{label}</span>
               <input
-                type="number"
-                value={value}
-                min="0"
+                type="text"
+                value={formatNominalInput(value)}
                 inputMode="numeric"
                 onChange={(event) => setter(cleanNominal(event.target.value))}
                 onFocus={(event) => event.target.select()}
@@ -160,6 +159,11 @@ function cleanNominal(value) {
   const digits = value.replace(/\D/g, "");
   if (!digits) return "";
   return String(Number(digits));
+}
+
+function formatNominalInput(value) {
+  if (value === "") return "";
+  return new Intl.NumberFormat("id-ID").format(Number(value || 0));
 }
 
 function toNumber(value) {
