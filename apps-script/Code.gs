@@ -219,10 +219,14 @@ function formatTime(date) {
 function normalizeTimeValue(value) {
   if (!value) return "";
   if (Object.prototype.toString.call(value) === "[object Date]" && !isNaN(value.getTime())) {
-    return formatTime(value);
+    return [
+      String(value.getUTCHours()).padStart(2, "0"),
+      String(value.getUTCMinutes()).padStart(2, "0"),
+      String(value.getUTCSeconds()).padStart(2, "0"),
+    ].join(":");
   }
 
-  const text = String(value).trim();
+  const text = String(value).trim().replace(/^'/, "");
   if (!text) return "";
 
   const timeMatch = text.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
@@ -236,6 +240,21 @@ function normalizeTimeValue(value) {
   }
 
   return text;
+}
+
+function normalizeInvoiceStamp(value) {
+  const match = String(value || "").trim().match(/^(\d{8}-\d{6})$/);
+  return match ? match[1] : "";
+}
+
+function timeFromInvoice(value) {
+  const match = String(value || "").match(/^INV-\d{8}-(\d{2})(\d{2})(\d{2})$/);
+  return match ? `${match[1]}:${match[2]}:${match[3]}` : "";
+}
+
+function asText(value) {
+  if (value === undefined || value === null) return "";
+  return "'" + String(value);
 }
 
 function login(body) {
@@ -346,9 +365,12 @@ function checkout(sale) {
 
   try {
     const now = new Date();
-    const invoice = makeInvoice(now);
-    const tanggal = formatDate(now);
-    const jam = formatTime(now);
+    const clientInvoiceStamp = normalizeInvoiceStamp(sale.localInvoiceStamp);
+    const clientDate = normalizeDateValue(sale.localDate);
+    const clientTime = normalizeTimeValue(sale.localTime);
+    const invoice = clientInvoiceStamp ? "INV-" + clientInvoiceStamp : makeInvoice(now);
+    const tanggal = clientDate || formatDate(now);
+    const jam = clientTime || formatTime(now);
     const items = sale.items.map((item) => ({
       idBarang: item.idBarang,
       namaBarang: item.namaBarang,
@@ -371,7 +393,7 @@ function checkout(sale) {
     appendWithHeaders(SHEETS.transactions, HEADERS.transactions, {
       noInvoice: invoice,
       tanggal: tanggal,
-      jam: jam,
+      jam: asText(jam),
       kasir: sale.cashier || "",
       totalItem: totalItem,
       subtotal: subtotal,
@@ -433,7 +455,7 @@ function history() {
   return rows(SHEETS.transactions).records.map((record) => ({
     noInvoice: record.object.noInvoice,
     tanggal: normalizeDateValue(record.object.tanggal),
-    jam: normalizeTimeValue(record.object.jam),
+    jam: timeFromInvoice(record.object.noInvoice) || normalizeTimeValue(record.object.jam),
     kasir: record.object.kasir,
     totalItem: Number(record.object.totalItem || 0),
     subtotal: Number(record.object.subtotal || 0),

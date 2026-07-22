@@ -250,9 +250,9 @@ function demoCheckout(store, sale) {
   });
 
   const now = new Date();
-  const invoice = makeInvoice(now);
-  const tanggal = formatDate(now);
-  const jam = formatTime(now);
+  const invoice = sale.localInvoiceStamp ? `INV-${sale.localInvoiceStamp}` : makeInvoice(now);
+  const tanggal = sale.localDate || formatDate(now);
+  const jam = sale.localTime || formatTime(now);
   const items = sale.items.map((item) => ({
     noInvoice: invoice,
     idBarang: item.idBarang,

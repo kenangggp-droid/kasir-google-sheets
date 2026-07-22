@@ -27,6 +27,7 @@ export function Checkout({ setPage }) {
     try {
       if (!items.length) throw new Error("Keranjang masih kosong.");
       if (change < 0) throw new Error("Nominal bayar belum cukup.");
+      const checkoutMoment = new Date();
       const result = await api.checkout({
         cashier: user?.nama || user?.username,
         items,
@@ -34,6 +35,9 @@ export function Checkout({ setPage }) {
         tax: taxValue,
         paid: paidValue,
         method,
+        localDate: formatLocalDate(checkoutMoment),
+        localTime: formatLocalTime(checkoutMoment),
+        localInvoiceStamp: formatInvoiceStamp(checkoutMoment),
       });
       setMessage(`Invoice ${result.invoice} tersimpan.`);
       clearCart();
@@ -164,6 +168,34 @@ function cleanNominal(value) {
 function formatNominalInput(value) {
   if (value === "") return "";
   return new Intl.NumberFormat("id-ID").format(Number(value || 0));
+}
+
+function formatLocalDate(date) {
+  return [
+    String(date.getDate()).padStart(2, "0"),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    date.getFullYear(),
+  ].join("/");
+}
+
+function formatLocalTime(date) {
+  return [
+    String(date.getHours()).padStart(2, "0"),
+    String(date.getMinutes()).padStart(2, "0"),
+    String(date.getSeconds()).padStart(2, "0"),
+  ].join(":");
+}
+
+function formatInvoiceStamp(date) {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+    "-",
+    String(date.getHours()).padStart(2, "0"),
+    String(date.getMinutes()).padStart(2, "0"),
+    String(date.getSeconds()).padStart(2, "0"),
+  ].join("");
 }
 
 function toNumber(value) {
