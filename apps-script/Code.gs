@@ -82,6 +82,7 @@ function doGet(e) {
       password: e.parameter.password,
       noInvoice: e.parameter.noInvoice,
       idBarang: e.parameter.idBarang,
+      stok: e.parameter.stok,
       product: parseJsonParam(e.parameter.product),
       sale: parseJsonParam(e.parameter.sale),
     });
@@ -102,6 +103,7 @@ function handleRequest(body) {
       dashboard: () => dashboard(),
       products: () => products(),
       upsertProduct: () => upsertProduct(body.product),
+      correctStock: () => correctStock(body.idBarang, body.stok),
       deleteProduct: () => deleteProduct(body.idBarang),
       checkout: () => checkout(body.sale),
       history: () => history(),
@@ -316,6 +318,27 @@ function upsertProduct(product) {
   }
 
   return normalized;
+}
+
+function correctStock(idBarang, stok) {
+  if (!idBarang) throw new Error("ID Barang wajib diisi.");
+
+  const nextStock = Number(stok);
+  if (isNaN(nextStock) || nextStock < 0) {
+    throw new Error("Stok koreksi harus berupa angka 0 atau lebih.");
+  }
+
+  const data = rows(SHEETS.products);
+  const idIndex = data.headers.indexOf("ID Barang");
+  const stockIndex = data.headers.indexOf("Stok");
+  if (idIndex < 0 || stockIndex < 0) throw new Error("Kolom ID Barang atau Stok tidak ditemukan.");
+
+  const target = data.records.find((record) => String(record.raw[idIndex]) === String(idBarang));
+  if (!target) throw new Error("Barang tidak ditemukan.");
+
+  data.ws.getRange(target.rowNumber, stockIndex + 1).setValue(nextStock);
+  target.raw[stockIndex] = nextStock;
+  return normalizeProduct(objectFromRow(data.headers, target.raw));
 }
 
 function deleteProduct(idBarang) {

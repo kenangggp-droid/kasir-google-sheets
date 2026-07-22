@@ -87,7 +87,7 @@ export function Stock() {
         throw new Error("Stok koreksi harus berupa angka 0 atau lebih.");
       }
 
-      const saved = await api.upsertProduct({ ...item, stok: nextStock });
+      const saved = await api.correctStock(item.idBarang, nextStock);
       setMessage(`Stok ${saved.namaBarang} dikoreksi menjadi ${saved.stok} ${saved.satuan}.`);
       await load();
     } catch (err) {

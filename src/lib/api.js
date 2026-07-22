@@ -142,6 +142,7 @@ function demoRequest(action, payload) {
     dashboard: () => demoDashboard(store),
     products: () => store.products,
     upsertProduct: () => demoUpsertProduct(store, payload.product),
+    correctStock: () => demoCorrectStock(store, payload.idBarang, payload.stok),
     deleteProduct: () => demoDeleteProduct(store, payload.idBarang),
     checkout: () => demoCheckout(store, payload.sale),
     history: () => [...store.transactions].reverse(),
@@ -225,6 +226,23 @@ function demoUpsertProduct(store, product) {
 
   saveStore(store);
   return normalized;
+}
+
+function demoCorrectStock(store, idBarang, stok) {
+  const product = store.products.find((item) => item.idBarang === idBarang);
+  const nextStock = Number(stok);
+
+  if (!product) {
+    throw new Error("Barang tidak ditemukan.");
+  }
+
+  if (Number.isNaN(nextStock) || nextStock < 0) {
+    throw new Error("Stok koreksi harus berupa angka 0 atau lebih.");
+  }
+
+  product.stok = nextStock;
+  saveStore(store);
+  return product;
 }
 
 function demoDeleteProduct(store, idBarang) {
@@ -360,6 +378,7 @@ export const api = {
   dashboard: () => request("dashboard"),
   products: () => request("products"),
   upsertProduct: (product) => request("upsertProduct", { product }),
+  correctStock: (idBarang, stok) => request("correctStock", { idBarang, stok }),
   deleteProduct: (idBarang) => request("deleteProduct", { idBarang }),
   checkout: (sale) => request("checkout", { sale }),
   history: () => request("history"),
