@@ -4,6 +4,7 @@ import { CartProvider } from "./context/CartContext";
 import { Layout } from "./components/Layout";
 import { Dashboard } from "./pages/Dashboard";
 import { Login } from "./pages/Login";
+import { Showcase } from "./pages/Showcase";
 import { Stock } from "./pages/Stock";
 import { Sales } from "./pages/Sales";
 import { Checkout } from "./pages/Checkout";
@@ -27,6 +28,7 @@ function Router() {
 
   const pages = {
     dashboard: <Dashboard setPage={setPage} />,
+    etalase: <Showcase setPage={setPage} />,
     stok: <Stock />,
     transaksi: <Sales setPage={setPage} />,
     checkout: <Checkout setPage={setPage} />,

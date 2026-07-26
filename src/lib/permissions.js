@@ -1,13 +1,14 @@
 export const PAGES = {
   dashboard: "dashboard",
+  showcase: "etalase",
   stock: "stok",
   sales: "transaksi",
   checkout: "checkout",
   history: "riwayat",
 };
 
-const cashierPages = [PAGES.sales, PAGES.checkout];
-const adminPages = [PAGES.dashboard, PAGES.stock, PAGES.sales, PAGES.checkout, PAGES.history];
+const cashierPages = [PAGES.showcase, PAGES.sales, PAGES.checkout];
+const adminPages = [PAGES.dashboard, PAGES.showcase, PAGES.stock, PAGES.sales, PAGES.checkout, PAGES.history];
 
 export function isCashier(user) {
   return String(user?.role || "").toUpperCase() === "KASIR";
