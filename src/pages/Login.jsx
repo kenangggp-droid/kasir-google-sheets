@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { LockKeyhole, ReceiptText, UserRound } from "lucide-react";
+import { ArrowLeft, LockKeyhole, ReceiptText, UserRound } from "lucide-react";
 import { Button } from "../components/Button";
 import { useAuth } from "../context/AuthContext";
 
-export function Login() {
+export function Login({ onBack }) {
   const { login, loading } = useAuth();
   const [form, setForm] = useState({ username: "admin", password: "admin123" });
   const [error, setError] = useState("");
@@ -21,6 +21,16 @@ export function Login() {
   return (
     <main className="grid min-h-screen place-items-center px-4 py-10">
       <section className="glass-panel w-full max-w-md rounded-md p-6 animate-fade-up">
+        {onBack ? (
+          <button
+            type="button"
+            onClick={onBack}
+            className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-teal"
+          >
+            <ArrowLeft size={17} />
+            Kembali ke toko
+          </button>
+        ) : null}
         <div className="mb-7 flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-md bg-teal text-white shadow-lift">
             <ReceiptText size={26} />

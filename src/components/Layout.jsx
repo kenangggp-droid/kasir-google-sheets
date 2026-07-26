@@ -6,7 +6,6 @@ import {
   LogOut,
   ReceiptText,
   ShoppingCart,
-  Store,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
@@ -15,7 +14,6 @@ import { Button } from "./Button";
 
 const nav = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { key: "etalase", label: "Etalase", icon: Store },
   { key: "stok", label: "Stok Barang", icon: Boxes },
   { key: "transaksi", label: "Transaksi", icon: ClipboardList },
   { key: "checkout", label: "Checkout", icon: ShoppingCart },

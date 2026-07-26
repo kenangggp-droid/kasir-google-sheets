@@ -4,7 +4,7 @@ import { CartProvider } from "./context/CartContext";
 import { Layout } from "./components/Layout";
 import { Dashboard } from "./pages/Dashboard";
 import { Login } from "./pages/Login";
-import { Showcase } from "./pages/Showcase";
+import { PublicStorefront } from "./pages/PublicStorefront";
 import { Stock } from "./pages/Stock";
 import { Sales } from "./pages/Sales";
 import { Checkout } from "./pages/Checkout";
@@ -14,6 +14,7 @@ import { allowedPagesFor, defaultPageFor } from "./lib/permissions";
 function Router() {
   const { isAuthenticated, user } = useAuth();
   const [page, setPage] = useState("dashboard");
+  const [publicView, setPublicView] = useState("store");
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -23,12 +24,15 @@ function Router() {
   }, [isAuthenticated, page, user]);
 
   if (!isAuthenticated) {
-    return <Login />;
+    return publicView === "login" ? (
+      <Login onBack={() => setPublicView("store")} />
+    ) : (
+      <PublicStorefront onLogin={() => setPublicView("login")} />
+    );
   }
 
   const pages = {
     dashboard: <Dashboard setPage={setPage} />,
-    etalase: <Showcase setPage={setPage} />,
     stok: <Stock />,
     transaksi: <Sales setPage={setPage} />,
     checkout: <Checkout setPage={setPage} />,
